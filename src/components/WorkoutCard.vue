@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
 import Card from "./Card.vue";
 import type { Workout } from "@/services/getWorkouts";
 import ClickableWrapper from "./wrappers/ClickableWrapper.vue";

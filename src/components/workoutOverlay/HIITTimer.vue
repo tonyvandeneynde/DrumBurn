@@ -8,16 +8,18 @@
     <div class="rudiment">RUDIMENT: {{ rudiment }}</div>
     <div>TEMPO: {{ bpm }} BPM</div>
     <div class="phase" :class="currentPhase">
-      {{ currentPhase === "uptime" ? "WORK" : "REST" }}
+      {{ phaseText }}
     </div>
   </timer>
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, watch, toRefs } from "vue";
+import { ref, onUnmounted, watch, toRefs, computed } from "vue";
 import { type HIITExercise } from "@/services/getExercises";
 import { useTimer } from "@/composables/useTimer";
 import Timer from "./Timer.vue";
+
+const preRunTime = 5; // seconds before the exercise starts
 
 const props = defineProps<{
   exercise: HIITExercise;
@@ -30,10 +32,16 @@ const { bpm, downtime, repetitions, rudiment, uptime } = toRefs(
 );
 
 const currentRep = ref(1);
-const currentPhase = ref<"downtime" | "uptime">("uptime");
+const currentPhase = ref<"downtime" | "uptime" | "preRun">("preRun");
 const isFlashing = ref(false);
 
 let flashTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const phaseText = computed(() => {
+  if (currentPhase.value === "uptime") return "WORK";
+  if (currentPhase.value === "preRun") return "Get ready!";
+  return "REST";
+});
 
 // Watch for changes in timeLeft and start a new timer when the current phase ends
 const onTimerEnded = () => {
@@ -46,6 +54,9 @@ const onTimerEnded = () => {
     flashTimeout = setTimeout(() => {
       isFlashing.value = false;
     }, 200);
+  } else if (currentPhase.value === "preRun") {
+    currentPhase.value = "uptime";
+    startTimer(uptime.value);
   } else if (currentPhase.value === "downtime") {
     if (currentRep.value >= repetitions.value) {
       // If all repetitions are done, call the onExerciseComplete callback
@@ -62,7 +73,7 @@ const onTimerEnded = () => {
 const { startTimer, stopTimer, timeLabel } = useTimer(onTimerEnded);
 
 // Start the timer for the initial exercise
-startTimer(uptime.value);
+startTimer(preRunTime);
 
 watch(
   () => props.exercise,
@@ -97,5 +108,12 @@ onUnmounted(() => {
   font-size: 1.5em;
   font-weight: bold;
   margin-bottom: 0.5em;
+}
+
+.preRun {
+  font-size: 1.2em;
+  color: #ff4500;
+  font-weight: bold;
+  margin-top: 1em;
 }
 </style>

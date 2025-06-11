@@ -2,19 +2,20 @@ import { ref, computed } from "vue";
 
 export const useTimer = (onTimerEnded: () => void) => {
   const timeLeft = ref(0);
+  const isTimerRunning = ref(false);
   let intervalId: ReturnType<typeof setInterval> | null = null;
 
   const startTimer = (initialTimeInSeconds: number) => {
     if (intervalId) return;
 
     timeLeft.value = initialTimeInSeconds;
+    isTimerRunning.value = true;
 
     intervalId = setInterval(() => {
       if (timeLeft.value > 0) {
         timeLeft.value -= 1;
       } else {
-        clearInterval(intervalId!);
-        intervalId = null;
+        stopTimer();
         onTimerEnded();
       }
     }, 1000);
@@ -22,6 +23,7 @@ export const useTimer = (onTimerEnded: () => void) => {
 
   const stopTimer = () => {
     if (intervalId) {
+      isTimerRunning.value = false;
       clearInterval(intervalId);
       intervalId = null;
     }
@@ -45,5 +47,6 @@ export const useTimer = (onTimerEnded: () => void) => {
     stopTimer,
     timeLeft,
     timeLabel,
+    isTimerRunning,
   };
 };

@@ -4,6 +4,7 @@ import App from "./App.vue";
 import router from "./router";
 import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query";
 import { createPinia } from "pinia";
+import "material-design-icons-iconfont/dist/material-design-icons.css";
 
 const queryClient = new QueryClient();
 const pinia = createPinia();

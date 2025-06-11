@@ -1,5 +1,5 @@
 <template>
-  <Card>
+  <Card class="exercise-card">
     <template #title> {{ exercise.name }}</template>
   </Card>
 </template>
@@ -16,3 +16,13 @@ defineProps({
   },
 });
 </script>
+
+<style scoped>
+.exercise-card {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  box-sizing: border-box;
+}
+</style>
